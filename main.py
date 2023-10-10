@@ -1,0 +1,140 @@
+import discord
+from discord.ext import commands
+import requests
+import asyncio
+
+green = "\033[1;32m"
+white = "\033[1;37m" 
+color = 0x979797
+
+say_channel = 1145005935262171196
+prefix = "$"
+token = "token-here"
+koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
+bot_access = [1147158558157316177, 1157733927100883035]
+no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
+
+
+help_menu = discord.Embed(title = "HELP BOX", description = """
+- sb = latest selfbot version
+- prevsb = download older selfbot versions
+- note = send a message in <#1145005935262171196>
+- check `<https://url>` = Check if a website is up
+- botconfig = [OWNER ONLY]""",color=color)
+
+bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg",color=color)
+
+@koala.command()
+async def help(ctx):
+    try:
+        await ctx.reply(embed=help_menu)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+@koala.command()
+async def botconfig(ctx):
+     await ctx.reply(embed=bot_config)
+
+@koala.event
+async def on_ready():
+    print(f'{green}[+]{white} {koala.user} is online\nPrefix: {prefix}')
+
+@koala.command()
+async def check(ctx, website):
+    r = requests.post(website)
+    embed = discord.Embed(title = "Website Status", description=f"<REQUEST_{r.status_code}>", color=color)
+    await ctx.reply(embed=embed)
+
+@koala.command()
+async def prevsb(ctx):
+    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n[CURRENTLY DISCONTINUED]",color=color)
+    await ctx.reply(embed=embed)
+    
+@koala.command()
+async def sb(ctx):
+    embed = discord.Embed(title="DISCONTINUED", description=f"Hello <@{ctx.author.id}> refer to this message for the reasons of the project being discontinued, https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349", color=color)
+    await ctx.reply(embed=embed)
+
+@koala.command()
+async def say(ctx, *, text):
+    if ctx.author.id in bot_access:
+            message = ctx.message
+            await message.delete()
+            await ctx.send(text)
+    else:
+        await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def shutdown(ctx):
+    if ctx.author.id in bot_access:
+         await ctx.reply("> Shutdown innitiated...")
+         await ctx.reply("Bot is going offline :koala: :zzz:")
+         await koala.logout()
+    else:
+         await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def play(ctx, *, message):
+    if ctx.author.id in bot_access:
+        game = discord.Game(
+            name=message
+        )
+        await koala.change_presence(activity=game)
+        await ctx.reply(f"Koala is playing `{message}`")
+    else:
+         await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def listen(ctx, *, message):
+    if ctx.author.id in bot_access:
+        await koala.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.listening, 
+                name=message, 
+            ))
+        await ctx.reply(f"Koala is listening `{message}`")
+    else:
+         await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def watch(ctx, *, message):
+    if ctx.author.id in bot_access:
+        await koala.change_presence(
+            activity=discord.Activity(
+                type=discord.ActivityType.watching, 
+                name=message
+            ))
+        await ctx.reply(f'Koala is watching `{message}`')
+    else:
+         await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def stream(ctx, *, message): 
+    if ctx.author.id in bot_access:
+        await koala.change_presence(activity=discord.Streaming(name=message, url="https://twitch.tv/koala_from_mars")) 
+        await ctx.reply(f'Koala is streaming `{message}`')
+    else:
+         await ctx.send(embed=no_access_embed)
+
+@koala.command()
+async def dm(ctx, member: discord.Member, *, message):
+    if ctx.author.id in bot_access:
+        channel = await member.create_dm()
+        await channel.send(message)
+        embed = discord.Embed(title="Koala DM", description=f"DM has been sent to {member}", color=color)
+        await ctx.reply(embed=embed)
+    else:
+        await ctx.reply(embed=no_access_embed)  
+
+@koala.command()
+async def note(ctx, *, msg):
+     embed = discord.Embed(title="MESSAGE", description=f"<@{ctx.author.id}> says `{msg}`")
+     await koala.get_channel(say_channel).send(embed=embed)
+     await ctx.reply(":koala::white_check_mark:")
+    
+@koala.command()
+async def wizzer(ctx, aliases=["nuker"]):
+     embed = discord.Embed(title="Koala wizzer", description="Hey! Koala Nuker/Wizzer is not public at the moment, the devs are trying a method to make it public and also disable skids from skidding our code. You will be notified when it goes public. Thanks!",color=color)
+     await ctx.send(embed=embed)
+
+koala.run(token)

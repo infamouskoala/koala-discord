@@ -6,10 +6,11 @@ import asyncio
 green = "\033[1;32m"
 white = "\033[1;37m" 
 color = 0x979797
-
+owner = 1157733927100883035
 say_channel = 1145005935262171196
+reminder_channel = 1162723176598478878
 prefix = "$"
-token = "token-here"
+token = ""
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1147158558157316177, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
@@ -131,7 +132,17 @@ async def note(ctx, *, msg):
      embed = discord.Embed(title="MESSAGE", description=f"<@{ctx.author.id}> says `{msg}`")
      await koala.get_channel(say_channel).send(embed=embed)
      await ctx.reply(":koala::white_check_mark:")
-    
+
+@koala.command()
+async def todo(ctx, *, msg):
+     if ctx.author.id == owner:
+        embed = discord.Embed(title="TO-DO", description=f"{msg}")
+        await koala.get_channel(reminder_channel).send(f"<@{ctx.author.id}>", embed=embed)
+        await ctx.reply(":koala::white_check_mark:")
+     else:
+         await ctx.reply(embed=no_access_embed)
+
+
 @koala.command()
 async def wizzer(ctx, aliases=["nuker"]):
      embed = discord.Embed(title="Koala wizzer", description="Hey! Koala Nuker/Wizzer is not public at the moment, the devs are trying a method to make it public and also disable skids from skidding our code. You will be notified when it goes public. Thanks!",color=color)

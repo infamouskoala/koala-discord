@@ -12,7 +12,7 @@ reminder_channel = 1162723176598478878
 prefix = "$"
 token = ""
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
-bot_access = [1147158558157316177, 1157733927100883035]
+bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
 
 
@@ -20,10 +20,10 @@ help_menu = discord.Embed(title = "HELP BOX", description = """
 - sb = latest selfbot version
 - prevsb = download older selfbot versions
 - note = send a message in <#1145005935262171196>
-- check `<https://url>` = Check if a website is up
+- wizzer = koala wizzer status
 - botconfig = [OWNER ONLY]""",color=color)
 
-bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg",color=color)
+bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg, todo",color=color)
 
 @koala.command()
 async def help(ctx):
@@ -39,12 +39,6 @@ async def botconfig(ctx):
 @koala.event
 async def on_ready():
     print(f'{green}[+]{white} {koala.user} is online\nPrefix: {prefix}')
-
-@koala.command()
-async def check(ctx, website):
-    r = requests.post(website)
-    embed = discord.Embed(title = "Website Status", description=f"<REQUEST_{r.status_code}>", color=color)
-    await ctx.reply(embed=embed)
 
 @koala.command()
 async def prevsb(ctx):
@@ -142,10 +136,9 @@ async def todo(ctx, *, msg):
      else:
          await ctx.reply(embed=no_access_embed)
 
-
 @koala.command()
 async def wizzer(ctx, aliases=["nuker"]):
-     embed = discord.Embed(title="Koala wizzer", description="Hey! Koala Nuker/Wizzer is not public at the moment, the devs are trying a method to make it public and also disable skids from skidding our code. You will be notified when it goes public. Thanks!",color=color)
+     embed = discord.Embed(title="Koala wizzer", description="Hey, Koala Wizzer is not up for rent! Rent the latest version [here](https://discord.gg/ySSqyWVa4d)",color=color)
      await ctx.send(embed=embed)
 
 koala.run(token)

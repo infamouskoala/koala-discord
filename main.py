@@ -31,14 +31,22 @@ async def on_message(message):
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("<#1095617927039946794>")
-    elif "koala sb" in message.content.lower():
+        else:
+            pass
+    elif "koala sb" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
-    elif "koala" or "tools" or "scripts" in message.content.lower():
+        else:
+            pass
+    elif "koala" in message.content or "tools" in message.content or "scripts" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
+        else:
+            pass
+    else:
+        pass
  
     await koala.process_commands(message)
 

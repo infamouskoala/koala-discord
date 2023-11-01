@@ -11,7 +11,7 @@ say_channel = 1145005935262171196
 bot_id = 1161234902973415434
 reminder_channel = 1162723176598478878
 prefix = "$"
-token = "MTE2MTIzNDkwMjk3MzQxNTQzNA.GyuWpR.wjBo8Sr2lO02DkWHtuX2fhogb4Vc4MekVJ499g"
+token = ""
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)

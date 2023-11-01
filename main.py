@@ -8,13 +8,13 @@ white = "\033[1;37m"
 color = 0x979797
 owner = 1157733927100883035
 say_channel = 1145005935262171196
+bot_id = 1161234902973415434
 reminder_channel = 1162723176598478878
 prefix = "$"
-token = ""
+token = "MTE2MTIzNDkwMjk3MzQxNTQzNA.GyuWpR.wjBo8Sr2lO02DkWHtuX2fhogb4Vc4MekVJ499g"
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
-
 
 help_menu = discord.Embed(title = "HELP BOX", description = """
 - sb = latest selfbot version
@@ -24,6 +24,23 @@ help_menu = discord.Embed(title = "HELP BOX", description = """
 - botconfig = [OWNER ONLY]""",color=color)
 
 bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg, todo",color=color)
+
+@koala.event
+async def on_message(message):
+    if "help" in message.content:
+        if message.author.id != bot_id:
+            id = message.channel.id #maybe idk
+            await message.reply("<#1095617927039946794>")
+    elif "koala sb" in message.content.lower():
+        if message.author.id != bot_id:
+            id = message.channel.id #maybe idk
+            await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
+    elif "koala" or "tools" or "scripts" in message.content.lower():
+        if message.author.id != bot_id:
+            id = message.channel.id #maybe idk
+            await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
+ 
+    await koala.process_commands(message)
 
 @koala.command()
 async def help(ctx):

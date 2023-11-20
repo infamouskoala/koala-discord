@@ -21,7 +21,9 @@ help_menu = discord.Embed(title = "HELP BOX", description = """
 - prevsb = download older selfbot versions
 - note = send a message in <#1145005935262171196>
 - wizzer = koala wizzer status
-- botconfig = [OWNER ONLY]""",color=color)
+- botconfig = [OWNER ONLY]
+- github [query] = gthub finder
+""",color=color)
 
 bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg, todo",color=color)
 
@@ -39,7 +41,7 @@ async def on_message(message):
             await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
         else:
             pass
-    elif "koala" in message.content or "tools" in message.content or "scripts" in message.content:
+    elif "tools" in message.content or "scripts" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
@@ -163,7 +165,11 @@ async def todo(ctx, *, msg):
 
 @koala.command()
 async def wizzer(ctx, aliases=["nuker"]):
-     embed = discord.Embed(title="Koala wizzer", description="Hey, Koala Wizzer is not up for rent! Rent the latest version [here](https://discord.gg/ySSqyWVa4d)",color=color)
+     embed = discord.Embed(title="Koala wizzer", description="Not public :x:",color=color)
      await ctx.send(embed=embed)
+
+@koala.command()
+async def github(ctx , * , text):
+    await ctx.reply(f"> Found this: \nhttps://github.com/{text}")
 
 koala.run(token)

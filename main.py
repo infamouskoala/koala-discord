@@ -172,6 +172,6 @@ async def github(ctx , * , text):
 
 @koala.command()
 async def vcbot(ctx):
-    await ctx.reply(".")
+    await ctx.reply("download the script [here](https://github.com/infamous-koala/koalavc) or search koala's [github account](https://github.com/infamous-koala)")
 
 koala.run(token)

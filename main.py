@@ -16,26 +16,23 @@ koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), hel
 bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
 
-help_menu = discord.Embed(title = "HELP BOX", description = """
+help_menu = discord.Embed(title = "DOWNLOAD LINKS", description = """
 - sb = latest selfbot version
 - prevsb = download older selfbot versions
-- note = send a message in <#1145005935262171196>
 - wizzer = koala wizzer status
+- vcbot = koala vcbot link
+""",color=color)
+
+help_menu2 = discord.Embed(title = "BOT COMMANDS", description = """
+- note = send a message in <#1145005935262171196>
 - botconfig = [OWNER ONLY]
 - github [query] = gthub finder
 """,color=color)
-
 bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg, todo",color=color)
 
 @koala.event
 async def on_message(message):
-    if "help" in message.content:
-        if message.author.id != bot_id:
-            id = message.channel.id #maybe idk
-            await message.reply("<#1095617927039946794>")
-        else:
-            pass
-    elif "koala sb" in message.content:
+    if "koala sb" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
@@ -56,6 +53,7 @@ async def on_message(message):
 async def help(ctx):
     try:
         await ctx.reply(embed=help_menu)
+        await ctx.reply(embed=help_menu2)
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -171,5 +169,9 @@ async def wizzer(ctx, aliases=["nuker"]):
 @koala.command()
 async def github(ctx , * , text):
     await ctx.reply(f"> Found this: \nhttps://github.com/{text}")
+
+@koala.command()
+async def vcbot(ctx):
+    await ctx.reply(".")
 
 koala.run(token)

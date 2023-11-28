@@ -196,7 +196,8 @@ async def updateprefix(ctx, *,prefix):
         writer = file.write(prefix)
         file.close()
         await ctx.reply(f"Prefix has been updated to {prefix}")
-        os.system("py main.py") # rerunning the code to save changes and read the prefix.txt once again.
+        os.system("py main.py") 
+# when i was hosting the bot on my linux vm, i realised i had to update the command to python || python3 lol. || stands for or and performs all the commands.
     else:
         await ctx.reply(embed=no_access_embed)
 

@@ -1,0 +1,4 @@
+discord
+requests
+asyncio
+os

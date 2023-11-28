@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import requests
 import asyncio
+import os
 
 green = "\033[1;32m"
 white = "\033[1;37m" 
@@ -10,7 +11,7 @@ owner = 1157733927100883035
 say_channel = 1145005935262171196
 bot_id = 1161234902973415434
 reminder_channel = 1162723176598478878
-prefix = "$"
+prefix = open("prefix.txt","r").read()
 token = ""
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1153710913103343729, 1157733927100883035]
@@ -21,14 +22,16 @@ help_menu = discord.Embed(title = "DOWNLOAD LINKS", description = """
 - prevsb = download older selfbot versions
 - wizzer = koala wizzer status
 - vcbot = koala vcbot link
+- botsource = koala bot source code
 """,color=color)
 
 help_menu2 = discord.Embed(title = "BOT COMMANDS", description = """
 - note = send a message in <#1145005935262171196>
+- github [post `https://github.com/`] = gthub finder 
+- tenor [post `https://tenor.com/view/`] = embed tenor gifs 
 - botconfig = [OWNER ONLY]
-- github [query] = gthub finder
 """,color=color)
-bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown, listen, watch, play, stream, dm @ msg, todo",color=color)
+bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown,\nlisten,\nwatch,\nplay,\nstream,\ndm @ msg,\ntodo,\nupdateprefix (prefix)[If left null, the bot will run without prefix. Magic!]",color=color)
 
 @koala.event
 async def on_message(message):
@@ -44,6 +47,10 @@ async def on_message(message):
             await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
         else:
             pass
+    elif f"<@{bot_id}>" in message.content:
+        if message.author.id != bot_id:
+            await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
+
     else:
         pass
  
@@ -172,6 +179,25 @@ async def github(ctx , * , text):
 
 @koala.command()
 async def vcbot(ctx):
-    await ctx.reply("download the script [here](https://github.com/infamous-koala/koalavc) or search koala's [github account](https://github.com/infamous-koala)")
+    await ctx.reply("download the script [here](https://github.com/infamouskoala/koalavc) or search koala's [github account](https://github.com/infamous-koala)")
+
+@koala.command()
+async def tenor(ctx, text):
+    await ctx.reply(f"> Embeded tenor gif\nhttps://tenor.com/view/{text}")
+
+@koala.command()
+async def botsource(ctx):
+    await ctx.reply("The bot is an opensrc project, you can download the files [here](https://github.com/infamouskoala/koala-discord) (or here is the link: https://github.com/infamouskoala/koala-discord). Make sure to star the repo :koala::heart:")
+
+@koala.command()
+async def updateprefix(ctx, *,prefix):
+    if ctx.author.id in bot_access:
+        file = open("prefix.txt", "w")
+        writer = file.write(prefix)
+        file.close()
+        await ctx.reply(f"Prefix has been updated to {prefix}")
+        os.system("py main.py") # rerunning the code to save changes and read the prefix.txt once again.
+    else:
+        await ctx.reply(embed=no_access_embed)
 
 koala.run(token)

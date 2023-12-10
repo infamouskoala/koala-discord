@@ -8,11 +8,12 @@ green = "\033[1;32m"
 white = "\033[1;37m" 
 color = 0x979797
 owner = 1157733927100883035
+dmlog_channel = 1183314766647791747
 say_channel = 1145005935262171196
 bot_id = 1161234902973415434
 reminder_channel = 1162723176598478878
 prefix = open("prefix.txt","r").read()
-token = ""
+token = input("bot token: ")
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
@@ -23,19 +24,29 @@ help_menu = discord.Embed(title = "DOWNLOAD LINKS", description = """
 - wizzer = koala wizzer status
 - vcbot = koala vcbot link
 - botsource = koala bot source code
+- koalahook = koala hook repository
 """,color=color)
 
 help_menu2 = discord.Embed(title = "BOT COMMANDS", description = """
 - note = send a message in <#1145005935262171196>
 - github [post `https://github.com/`] = gthub finder 
 - tenor [post `https://tenor.com/view/`] = embed tenor gifs 
+- youtube [post `https://youtube.com/`] = embed youtube links
 - botconfig = [OWNER ONLY]
 """,color=color)
-bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown,\nlisten,\nwatch,\nplay,\nstream,\ndm @ msg,\ntodo,\nupdateprefix (prefix)[If left null, the bot will run without prefix. Magic!]",color=color)
+bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown,\nlisten,\nwatch,\nplay,\nstream,\ndm @ msg,\ntodo,\nupdateprefix (prefix)[If left null, the bot will run without prefix. Magic!]\nreboot",color=color)
 
+def restartbot():   #restart function cuz i need it
+    os.system("clear || cls")
+    os.system("py main.py || python main.py")
+
+
+# DM + AUTOMOD (SORTA)
 @koala.event
 async def on_message(message):
-    if "koala sb" in message.content:
+    if message.content == "" or message.author.id == koala.user.id:
+        pass
+    elif "koala sb" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
             await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
@@ -52,8 +63,8 @@ async def on_message(message):
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
 
     else:
-        pass
- 
+         await koala.get_channel(dmlog_channel).send(f"<@{message.author.id}> said `{message.content}` in my DMs.")
+         pass
     await koala.process_commands(message)
 
 @koala.command()
@@ -195,10 +206,26 @@ async def updateprefix(ctx, *,prefix):
         file = open("prefix.txt", "w")
         writer = file.write(prefix)
         file.close()
-        await ctx.reply(f"Prefix has been updated to {prefix}")
-        os.system("py main.py") 
-# when i was hosting the bot on my linux vm, i realised i had to update the command to python || python3 lol. || stands for or and performs all the commands.
+        await ctx.reply(f"Prefix has been updated to {prefix}, restarting bot..")
+        restartbot()
     else:
         await ctx.reply(embed=no_access_embed)
+
+@koala.command()
+async def koalahook(ctx):
+    await ctx.reply("https://github.com/infamouskoala/koalahook") 
+
+@koala.command()
+async def youtube(ctx, *,text):
+    await ctx.reply(f"> YouTube Embed \nhttps://youtube.com/{text}")
+
+@koala.command()
+async def reboot(ctx):
+    if ctx.author.id in bot_access:
+        await ctx.reply("KoalaNode is restarting..")
+        restartbot()
+        await ctx.send("KoalaNodes are back online!")
+    else:
+         await ctx.send(embed=no_access_embed)
 
 koala.run(token)

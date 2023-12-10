@@ -45,8 +45,9 @@ def restartbot():   #restart function cuz i need it
 # DM + AUTOMOD (SORTA)
 @koala.event
 async def on_message(message):
-    if message.content == "" or message.author.id == koala.user.id or message.channel.id != bot_channel_id:
-        pass
+    if isinstance(message.channel, discord.DMChannel):
+        await koala.get_channel(dmlog_channel).send(f"`{message.author.id}` said `{message.content}` in my DMs")
+    
     elif "koala sb" in message.content:
         if message.author.id != bot_id:
             id = message.channel.id #maybe idk
@@ -63,7 +64,6 @@ async def on_message(message):
         if message.author.id != bot_id:
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
     else:
-         await koala.get_channel(dmlog_channel).send(f"<@{message.author.id}> said `{message.content}` in my DMs")
          pass
     await koala.process_commands(message)
 

@@ -9,11 +9,12 @@ white = "\033[1;37m"
 color = 0x979797
 owner = 1157733927100883035
 dmlog_channel = 1183314766647791747
+bot_channel_id = 1161683309093453834
 say_channel = 1145005935262171196
 bot_id = 1161234902973415434
 reminder_channel = 1162723176598478878
 prefix = open("prefix.txt","r").read()
-token = input("bot token: ")
+token = input("token: ")
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 bot_access = [1153710913103343729, 1157733927100883035]
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
@@ -44,7 +45,7 @@ def restartbot():   #restart function cuz i need it
 # DM + AUTOMOD (SORTA)
 @koala.event
 async def on_message(message):
-    if message.content == "" or message.author.id == koala.user.id:
+    if message.content == "" or message.author.id == koala.user.id or message.channel.id != bot_channel_id:
         pass
     elif "koala sb" in message.content:
         if message.author.id != bot_id:
@@ -61,9 +62,8 @@ async def on_message(message):
     elif f"<@{bot_id}>" in message.content:
         if message.author.id != bot_id:
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
-
     else:
-         await koala.get_channel(dmlog_channel).send(f"<@{message.author.id}> said `{message.content}` in my DMs.")
+         await koala.get_channel(dmlog_channel).send(f"<@{message.author.id}> said `{message.content}` in my DMs")
          pass
     await koala.process_commands(message)
 

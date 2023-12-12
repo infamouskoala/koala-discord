@@ -1,4 +1,0 @@
-discord
-requests
-asyncio
-os

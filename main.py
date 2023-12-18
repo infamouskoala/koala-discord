@@ -5,22 +5,21 @@ import os
 
 green = "\033[1;32m"
 white = "\033[1;37m" 
-afkvalue = False
 color = 0x979797
 
 #using prefix.txt instead of loading from json so that i can change the prefix during runtime and rerun the file to save changes
 prefix = open("src/prefix.txt","r").read()  
-
 configfile = open('src/config.json')
 data = json.load(configfile)
 token = data["token"]
 dmlog_channel = data["dmlog_channel"]
 owner = data["owner"]
 say_channel = data["saychannel"]
-bot_id = data["botid"]
 reminder_channel = data["reminder_channel"]
 bot_access = data["botaccess"]
 ownerid = data["owner"]
+koalalog = data["modlogs"]
+afkvalue = False
 
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
@@ -37,16 +36,21 @@ help_menu = discord.Embed(title = "DOWNLOAD LINKS", description = """
 help_menu2 = discord.Embed(title = "BOT COMMANDS", description = """
 - note = send a message in <#1145005935262171196>
 - github [post `https://github.com/`] = gthub finder 
-- tenor [post `https://tenor.com/view/`] = embed tenor gifs 
-- youtube [post `https://youtube.com/`] = embed youtube links
+- tenor [post `https://tenor.com/view/`] = embed tenor gifs
 - botconfig = [OWNER ONLY]
 """,color=color)
+
+help_menu3 = discord.Embed(title="MOD COMMANDS", description="""
+- kick @user reason
+- ban @user reason
+- purge amount
+""", color=color)
+
 bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown,\nlisten,\nwatch,\nplay,\nstream,\ndm @ msg,\ntodo,\nupdateprefix (prefix)[If left null, the bot will run without prefix. Magic!]\nreboot",color=color)
 
 def restartbot():   #restart function cuz i need it
     os.system("clear || cls")
     os.system("py main.py || python main.py")
-
 
 # DM + AUTOMOD (SORTA)
 @koala.event
@@ -55,19 +59,19 @@ async def on_message(message):
         await koala.get_channel(dmlog_channel).send(f"`{message.author.id}` said `{message.content}` in my DMs")
     
     elif "koala sb" in message.content:
-        if message.author.id != bot_id:
+        if message.author.id != koala.user.id:
             id = message.channel.id #maybe idk
             await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
         else:
             pass
     elif "tools" in message.content or "scripts" in message.content:
-        if message.author.id != bot_id:
+        if message.author.id != koala.user.id:
             id = message.channel.id #maybe idk
             await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
         else:
             pass
-    elif f"<@{bot_id}>" in message.content:
-        if message.author.id != bot_id:
+    elif f"<@{koala.user.id}>" in message.content:
+        if message.author.id != koala.user.id:
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
     elif f"<@{owner}>" in message.content:
         if afkvalue == True:
@@ -83,6 +87,7 @@ async def help(ctx):
     try:
         await ctx.reply(embed=help_menu)
         await ctx.reply(embed=help_menu2)
+        await ctx.reply(embed=help_menu3)
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -196,16 +201,18 @@ async def wizzer(ctx, aliases=["nuker"]):
      await ctx.send(embed=embed)
 
 @koala.command()
-async def github(ctx ,text):
-    await ctx.reply(f"> Found this: \nhttps://github.com/{text}")
+async def vcbot(ctx):
+    await ctx.reply("download the script [here](https://github.com/infamouskoala/koalavc) or search koala's [github account](https://github.com/infamouskoala)")
 
 @koala.command()
-async def vcbot(ctx):
-    await ctx.reply("download the script [here](https://github.com/infamouskoala/koalavc) or search koala's [github account](https://github.com/infamous-koala)")
+async def github(ctx ,text):
+    message = text.replace("@","naughty boy :smirk: we have already found the bug and fixed it")
+    await ctx.reply(f"> Found this: \nhttps://github.com/{message}")
 
 @koala.command()
 async def tenor(ctx, text):
-    await ctx.reply(f"> Embeded tenor gif\nhttps://tenor.com/view/{text}")
+    message = text.replace("@","naughty boy :smirk: we have already found the bug and fixed it")
+    await ctx.reply(f"> Embeded tenor gif\nhttps://tenor.com/view/{message}")
 
 @koala.command()
 async def botsource(ctx):
@@ -225,10 +232,6 @@ async def updateprefix(ctx, *,prefix):
 @koala.command()
 async def koalahook(ctx):
     await ctx.reply("https://github.com/infamouskoala/koalahook") 
-
-@koala.command()
-async def youtube(ctx, text):
-    await ctx.reply(f"> YouTube Embed \nhttps://youtube.com/{text}")
 
 @koala.command()
 async def reboot(ctx):
@@ -256,5 +259,41 @@ async def unafk(ctx):
         await ctx.reply("You're no longer afk!")
     else:
         await ctx.reply(embed=no_access_embed)
+
+# NEW COMMMANDS
+@koala.command()
+async def purge(ctx, amount: int):
+    if ctx.message.author.guild_permissions.manage_messages:
+        await ctx.channel.purge(limit=amount+1)
+        await ctx.send(f'Purged {amount} messages.')
+        await koala.get_channel(koalalog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {amount} messages in {ctx.channel}")
+    else:
+        await ctx.reply(":x: You don't have perms to perform this task")
+
+@koala.command()
+async def kick(ctx, member: discord.Member, reason):
+    if ctx.message.author.guild_permissions.kick_members:
+        if reason == "" or member == None:
+            await ctx.reply("reason or member invalid, command usage:\n> kick @mention reason")
+        else:
+            await member.send(f'You have been kicked from {ctx.guild.name} for `{reason}`.')
+            await member.kick(delete_message_days=0, reason=reason)
+            await ctx.send(f'Kicked {member.mention}')
+            await koala.get_channel(koalalog).send(f"[:boot:] <@{ctx.author.id}> kicked {member} for `{reason}`")
+    else:
+        await ctx.reply(":x: You don't have perms to perform this task")
+
+@koala.command()
+async def ban(ctx, member: discord.Member, reason):
+    if ctx.message.author.guild_permissions.ban_members:
+        if reason == "" or member == None:
+            await ctx.reply("reason or member invalid, command usage:\n> ban @mention reason")
+        else:
+            await member.send(f'You have been banned from {ctx.guild.name}. for `{reason}`.')
+            await member.ban(delete_message_days=0,reason=reason)
+            await ctx.send(f'Banned {member.mention}')
+            await koala.get_channel(koalalog).send(f"[:hammer:] <@{ctx.author.id}> banned {member} for `{reason}`")
+    else:
+        await ctx.reply(":x: You don't have perms to perform this task")
 
 koala.run(token)

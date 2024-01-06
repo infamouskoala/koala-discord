@@ -3,12 +3,12 @@ from discord.ext import commands
 import json
 import os
 
-green = "\033[1;32m"
-white = "\033[1;37m" 
-color = 0x979797
+green = discord.Color.green()
+white = discord.Color.white()
+color = 0x979797 #?????
 
-#using prefix.txt instead of loading from json so that i can change the prefix during runtime and rerun the file to save changes
-prefix = open("src/prefix.txt","r").read()  
+#using prefix.txt instead of loading from json so that i can change the prefix during runtime and rerun the file to save changes #kill yourself
+#prefix = open("src/prefix.txt","r").read()  
 configfile = open('src/config.json')
 data = json.load(configfile)
 token = data["token"]
@@ -20,8 +20,8 @@ bot_access = data["botaccess"]
 ownerid = data["owner"]
 koalalog = data["modlogs"]
 afkvalue = False
-
-koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
+prefix = "k" #why the fuck do you load the prefix from a file????
+koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None) #why the fuck do you load a file
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
 deleted_message = "NIL"
 deleted_message_author = "NIL"

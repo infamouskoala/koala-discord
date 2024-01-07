@@ -1,7 +1,7 @@
+import os
 import discord
 from discord.ext import commands
 import json
-import os
 
 green = "\033[1;32m"
 white = "\033[1;37m" 
@@ -67,13 +67,7 @@ async def on_message(message):
     if isinstance(message.channel, discord.DMChannel):
         embed = discord.Embed(title="DM", description=f"<@{message.author.id}> dmed me '{message.content}'")
         await koala.get_channel(dmlog_channel).send(embed=embed)
-    
-    elif "koala sb" in message.content:
-        if message.author.id != koala.user.id:
-            id = message.channel.id #maybe idk
-            await message.reply("https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349")
-        else:
-            pass
+        
     elif "tools" in message.content or "scripts" in message.content:
         if message.author.id != koala.user.id:
             id = message.channel.id #maybe idk
@@ -119,12 +113,12 @@ async def on_ready():
 
 @koala.command()
 async def prevsb(ctx):
-    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n[CURRENTLY DISCONTINUED]",color=color)
+    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n[CURRENTLY PAUSED]\n recode: click [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file) to download",color=color)
     await ctx.reply(embed=embed)
     
 @koala.command()
 async def sb(ctx):
-    embed = discord.Embed(title="DISCONTINUED", description=f"Hello <@{ctx.author.id}> refer to this message for the reasons of the project being discontinued, https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349", color=color)
+    embed = discord.Embed(title="Download KSB", description=f"Hello <@{ctx.author.id}>, click [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file) to download the script.", color=color)
     await ctx.reply(embed=embed)
 
 @koala.command()

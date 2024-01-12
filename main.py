@@ -1,7 +1,9 @@
-import os
 import discord
 from discord.ext import commands
 import json
+import os
+
+# config and main.py updated
 
 green = "\033[1;32m"
 white = "\033[1;37m" 
@@ -18,7 +20,8 @@ say_channel = data["saychannel"]
 reminder_channel = data["reminder_channel"]
 bot_access = data["botaccess"]
 ownerid = data["owner"]
-koalalog = data["modlogs"]
+koalamodlog= data["modlogs"]
+koalalog = data["logchannel"]
 afkvalue = False
 
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
@@ -61,22 +64,39 @@ def restartbot():   #restart function cuz i need it
     os.system("clear || cls")
     os.system("py main.py || python main.py")
 
+@koala.event
+async def on_member_join(member):
+   await koala.get_channel(koalalog).send(f"[+] {member.mention} has joined")
+
+@koala.event
+async def on_member_remove(member):
+   await koala.get_channel(koalalog).send(f"[-] {member.mention} has left")
+
 # DM + AUTOMOD (SORTA)
 @koala.event
 async def on_message(message):
+    # LOG EVERY SINGLE MESSAGE IN THE ENTIRE SERVER LMFAO
+    # if message.content == "":
+    #     pass
+    # else:
+    #     embed = discord.Embed(title="Message", description=f"<@{message.author.id}> said `{message.content}` in <#{message.channel.id}>", color=color)
+    #     await koala.get_channel(messagelogs).send(embed=embed)
+
     if isinstance(message.channel, discord.DMChannel):
         embed = discord.Embed(title="DM", description=f"<@{message.author.id}> dmed me '{message.content}'")
         await koala.get_channel(dmlog_channel).send(embed=embed)
-        
+
     elif "tools" in message.content or "scripts" in message.content:
         if message.author.id != koala.user.id:
             id = message.channel.id #maybe idk
             await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
         else:
             pass
+
     elif f"<@{koala.user.id}>" in message.content:
         if message.author.id != koala.user.id:
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
+    
     elif f"<@{owner}>" in message.content:
         if afkvalue == True:
             embed = discord.Embed(title="AFK", description=f"Owner is afk: {afkmessage}", color=color)
@@ -93,6 +113,17 @@ async def on_message_delete(message):
     global deleted_message_author
     deleted_message=message.content
     deleted_message_author=message.author.id
+    embed = discord.Embed(title="Delete", description=f"Message deleted in <#{message.channel.id}> by <@{message.author.id}>. Content: `{message.content}`", color=color)
+    await koala.get_channel(koalalog).send(embed=embed)
+
+@koala.event
+async def on_message_edit(message_before, message_after):
+    embed = discord.Embed(title="Edit", description=f"<@{message_before.author.id}> edited a message in <#{message_before.channel.id}>, `{message_before.content}` to `{message_after.content}`", color=color)
+    await koala.get_channel(koalalog).send(embed=embed)
+
+@koala.event
+async def on_command_error(ctx, error):
+    pass
 
 @koala.command()
 async def help(ctx):
@@ -113,12 +144,12 @@ async def on_ready():
 
 @koala.command()
 async def prevsb(ctx):
-    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n[CURRENTLY PAUSED]\n recode: click [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file) to download",color=color)
+    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n recode: [download](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file)",color=color)
     await ctx.reply(embed=embed)
     
 @koala.command()
 async def sb(ctx):
-    embed = discord.Embed(title="Download KSB", description=f"Hello <@{ctx.author.id}>, click [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file) to download the script.", color=color)
+    embed = discord.Embed(title="DISCONTINUED", description=f"Hello <@{ctx.author.id}>, we are no longer in the mainstream botting com, you can read about it here: https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349\ndownload the selfbot by clicking [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file)", color=color)
     await ctx.reply(embed=embed)
 
 @koala.command()
@@ -279,7 +310,7 @@ async def purge(ctx, amount: int):
     if ctx.message.author.guild_permissions.manage_messages:
         await ctx.channel.purge(limit=amount+1)
         await ctx.send(f'Purged {amount} messages.')
-        await koala.get_channel(koalalog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {amount} messages in {ctx.channel}")
+        await koala.get_channel(koalamodlog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {amount} messages in {ctx.channel}")
     else:
         await ctx.reply(":x: You don't have perms to perform this task")
 
@@ -292,7 +323,7 @@ async def kick(ctx, member: discord.Member, *, reason):
             await member.send(f'You have been kicked from {ctx.guild.name} for `{reason}`.')
             await member.kick(reason=reason)
             await ctx.send(f'Kicked {member.mention}')
-            await koala.get_channel(koalalog).send(f"[:boot:] <@{ctx.author.id}> kicked {member} for `{reason}`")
+            await koala.get_channel(koalamodlog).send(f"[:boot:] <@{ctx.author.id}> kicked {member} for `{reason}`")
     else:
         await ctx.reply(":x: You don't have perms to perform this task")
 
@@ -305,7 +336,7 @@ async def ban(ctx, member: discord.Member, *, reason):
             await member.send(f'You have been banned from {ctx.guild.name}. for `{reason}`.')
             await member.ban(delete_message_days=0,reason=reason)
             await ctx.send(f'Banned {member.mention}')
-            await koala.get_channel(koalalog).send(f"[:hammer:] <@{ctx.author.id}> banned {member} for `{reason}`")
+            await koala.get_channel(koalamodlog).send(f"[:hammer:] <@{ctx.author.id}> banned {member} for `{reason}`")
     else:
         await ctx.reply(":x: You don't have perms to perform this task")
 
@@ -324,7 +355,7 @@ async def warn(ctx, user_id: int):
             with open(file_path, 'w') as file:
                 file.write(str(warnings))
             await ctx.send(f"<@{user_id}> now has {warnings} warnings.")
-            await ctx.get_channel(koalalog).send(f"[:speaking_head:]<@{ctx.author.id}> warned <@{user_id}>")
+            await ctx.get_channel(koalamodlog).send(f"[:speaking_head:]<@{ctx.author.id}> warned <@{user_id}>")
         else:
             with open(file_path, 'w') as file:
                 file.write("1")
@@ -358,7 +389,7 @@ async def editwarn(ctx, user_id: int, new_warnings: int):
             with open(file_path, 'w') as file:
                 file.write(str(new_warnings))
             await ctx.send(f"<@{user_id}> now has {new_warnings} warnings.")
-            await ctx.get_channel(koalalog).send(f"[:speaking_head:]<@{ctx.author.id}> appended warnings for <@{user_id}> to {new_warnings}")
+            await ctx.get_channel(koalamodlog).send(f"[:speaking_head:]<@{ctx.author.id}> appended warnings for <@{user_id}> to {new_warnings}")
 
         else:
             await ctx.send(f"<@{user_id}> does not have any warnings.")

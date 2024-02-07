@@ -1,7 +1,7 @@
+import os
 import discord
 from discord.ext import commands
 import json
-import os
 
 # config and main.py updated
 
@@ -22,43 +22,44 @@ bot_access = data["botaccess"]
 ownerid = data["owner"]
 koalamodlog= data["modlogs"]
 koalalog = data["logchannel"]
+
 afkvalue = False
+deb = False
 
 koala = commands.Bot(command_prefix=prefix, intents = discord.Intents.all(), help_command=None)
 no_access_embed = discord.Embed(title="Koala Error", description="You cannot run the given command.", color=color)
-deleted_message = "NIL"
-deleted_message_author = "NIL"
-afkmessage = "NIL"
-help_menu = discord.Embed(title = "DOWNLOAD LINKS", description = """
-- sb = latest selfbot version
-- prevsb = download older selfbot versions
-- wizzer = koala wizzer status
-- vcbot = koala vcbot link
-- botsource = koala bot source code
-- koalahook = koala hook repository
+deleted_message = None
+deleted_message_author = None
+afkmessage = None
+
+help_menu = discord.Embed(description = """
+- DOWNLOAD LINKS
+`sb, prevsb, wizzer, vcbot, botsource, koalahook`
+
+- BOT COMMANDS
+`note, github <accountname/repo>, tenor <gifid>, find <@user>, snipe, embed [msg]`
+
+- MOD COMMANDS
+`kick @user reason, ban @user reason, warn <userid>, editwarn <userid> <amount>, checkwarns <userid>, purge <amount>`
 """,color=color)
 
-help_menu2 = discord.Embed(title = "BOT COMMANDS", description = """
-- note = send a message in <#1145005935262171196>
-- github [post `https://github.com/`] = gthub finder 
-- tenor [post `https://tenor.com/view/`] = embed tenor gifs
-- find <@user> = find users and do the nasty w them :smiling_imp: 
-- snipe = snipe last deleted message
-- embed [msg] = embed a custom message
+bot_config = discord.Embed(title = "", description = """
+### Bot Admin Commands
+shutdown = shutdown the bot
+listen = RPC listen
+watch = RPC watch
+play = RPC play
+stream = RPC streaming
+dm (@abc) (msg) = DM user
+updateprefix (prefix) = Update Bot Prefix
+reboot = Reboot the bot
+
+### Owner Only
+todo 
+afk
+exc
+pingtgl
 """,color=color)
-
-help_menu3 = discord.Embed(title="MOD COMMANDS", description="""
-- kick @user reason
-- ban @user reason
-- warn <userid>
-- editwarn <userid> <amount>
-- checkwarns <userid>
-- purge amount
-
-- botconfig = [OWNER ONLY]
-""", color=color)
-
-bot_config = discord.Embed(title = "BOT CONFIG", description = "shutdown,\nlisten,\nwatch,\nplay,\nstream,\ndm @ msg,\ntodo,\nupdateprefix (prefix)[If left null, the bot will run without prefix. Magic!]\nreboot",color=color)
 
 def restartbot():   #restart function cuz i need it
     os.system("clear || cls")
@@ -98,9 +99,12 @@ async def on_message(message):
             await message.reply(f"Hello <@{message.author.id}>, my prefix is {prefix}. Try running `{prefix}help`")
     
     elif f"<@{owner}>" in message.content:
-        if afkvalue == True:
-            embed = discord.Embed(title="AFK", description=f"Owner is afk: {afkmessage}", color=color)
-            await message.reply(embed=embed)
+        if message.author.id != koala.user.id:
+            if afkvalue == True:
+                embed = discord.Embed(description=f"Owner is afk", color=color)
+                await message.reply(f"{afkmessage}", embed=embed)
+            else:
+                pass
         else:
             pass
     else:
@@ -123,14 +127,15 @@ async def on_message_edit(message_before, message_after):
 
 @koala.event
 async def on_command_error(ctx, error):
-    pass
+    if deb == True:
+        await ctx.send(f"Bot Error: `{error}`")
+    else: 
+        pass
 
 @koala.command()
 async def help(ctx):
     try:
         await ctx.reply(embed=help_menu)
-        await ctx.reply(embed=help_menu2)
-        await ctx.reply(embed=help_menu3)
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -144,12 +149,12 @@ async def on_ready():
 
 @koala.command()
 async def prevsb(ctx):
-    embed = discord.Embed(title="Koala SB", description="v1.0: Release\nv1.5: v1 patched\n recode: [download](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file)",color=color)
+    embed = discord.Embed(title="Koala Userbot", description="v1.0: Release\nv1.5: v1 patched\n recode\n re v2: [download](https://www.mediafire.com/file/wnm6f0buu80v598/Koala_Selfbot_v2.zip/file)",color=color)
     await ctx.reply(embed=embed)
     
 @koala.command()
 async def sb(ctx):
-    embed = discord.Embed(title="DISCONTINUED", description=f"Hello <@{ctx.author.id}>, we are no longer in the mainstream botting com, you can read about it here: https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349\ndownload the selfbot by clicking [here](https://www.mediafire.com/file/ro7je3qpczq1gj6/Koala_Selfbot.zip/file)", color=color)
+    embed = discord.Embed(title="Koala Userbot", description=f"Hello <@{ctx.author.id}>, we are no longer in the mainstream botting com, you can read about it here: https://discord.com/channels/1095595243417649175/1095645247536648222/1157221000799326349\ndownload the selfbot by clicking [here](https://www.mediafire.com/file/wnm6f0buu80v598/Koala_Selfbot_v2.zip/file)", color=color)
     await ctx.reply(embed=embed)
 
 @koala.command()
@@ -240,8 +245,7 @@ async def todo(ctx, *, msg):
 
 @koala.command()
 async def wizzer(ctx, aliases=["nuker"]):
-     embed = discord.Embed(title="Koala wizzer", description="Not public :x:",color=color)
-     await ctx.send(embed=embed)
+	await ctx.reply("https://github.com/infamouskoala/Koala-Nuker")
 
 @koala.command()
 async def vcbot(ctx):
@@ -306,11 +310,12 @@ async def unafk(ctx):
         await ctx.reply(embed=no_access_embed)
 
 @koala.command()
-async def purge(ctx, amount: int):
+async def purge(ctx, limit: int):
     if ctx.message.author.guild_permissions.manage_messages:
-        await ctx.channel.purge(limit=amount+1)
-        await ctx.send(f'Purged {amount} messages.')
-        await koala.get_channel(koalamodlog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {amount} messages in {ctx.channel}")
+        await ctx.channel.purge(limit=limit)
+        await ctx.message.delete()
+        await ctx.send(f'Purged {limit} messages.')
+        await koala.get_channel(koalamodlog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {limit} messages in {ctx.channel}")
     else:
         await ctx.reply(":x: You don't have perms to perform this task")
 
@@ -412,5 +417,27 @@ async def embed(ctx, *, description):
     message = ctx.message
     await message.delete()
     await ctx.send(embed=embed)
+
+@koala.command()
+async def debug(ctx):
+    if ctx.author.id in bot_access:
+        global deb
+        if deb == True:
+            await ctx.reply("Debug is enabled, disabling now...")
+            deb = False
+        elif deb == False:
+            await ctx.reply("Debug is disabled, enabling now...")
+            deb = True
+    else:
+        await ctx.reply(embed=no_access_embed)
+
+@koala.command()
+async def exc(ctx, *, cmd):
+    if ctx.author.id == ownerid:
+        await ctx.reply("Remote execution started, waiting for the output...")
+        exec(cmd)
+        await ctx.send("Code executed :white_check_mark:")
+    else:
+        await ctx.reply(embed=no_access_embed)
 
 koala.run(token)

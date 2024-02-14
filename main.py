@@ -113,17 +113,23 @@ async def on_message(message):
 
 @koala.event
 async def on_message_delete(message):
-    global deleted_message
-    global deleted_message_author
-    deleted_message=message.content
-    deleted_message_author=message.author.id
-    embed = discord.Embed(title="Delete", description=f"Message deleted in <#{message.channel.id}> by <@{message.author.id}>. Content: `{message.content}`", color=color)
-    await koala.get_channel(koalalog).send(embed=embed)
+    if message.author.id == koala.user.id:
+        pass
+    else:
+        global deleted_message
+        global deleted_message_author
+        deleted_message=message.content
+        deleted_message_author=message.author.id
+        embed = discord.Embed(title="Delete", description=f"Message deleted in <#{message.channel.id}> by <@{message.author.id}>. Content: `{message.content}`", color=color)
+        await koala.get_channel(koalalog).send(embed=embed)
 
 @koala.event
 async def on_message_edit(message_before, message_after):
-    embed = discord.Embed(title="Edit", description=f"<@{message_before.author.id}> edited a message in <#{message_before.channel.id}>, `{message_before.content}` to `{message_after.content}`", color=color)
-    await koala.get_channel(koalalog).send(embed=embed)
+    if message_before.author.id == koala.user.id:
+        pass
+    else:
+        embed = discord.Embed(title="Edit", description=f"<@{message_before.author.id}> edited a message in <#{message_before.channel.id}>, `{message_before.content}` to `{message_after.content}`", color=color)
+        await koala.get_channel(koalalog).send(embed=embed)
 
 @koala.event
 async def on_command_error(ctx, error):
@@ -312,8 +318,7 @@ async def unafk(ctx):
 @koala.command()
 async def purge(ctx, limit: int):
     if ctx.message.author.guild_permissions.manage_messages:
-        await ctx.channel.purge(limit=limit)
-        await ctx.message.delete()
+        await ctx.channel.purge(limit=limit+1)
         await ctx.send(f'Purged {limit} messages.')
         await koala.get_channel(koalamodlog).send(f"[:wastebasket:] <@{ctx.author.id}> cleared {limit} messages in {ctx.channel}")
     else:

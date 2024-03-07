@@ -90,7 +90,7 @@ async def on_message(message):
     elif "tools" in message.content or "scripts" in message.content:
         if message.author.id != koala.user.id:
             id = message.channel.id #maybe idk
-            await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamous-koala).")
+            await message.reply("The tools that Koala use in his videos are either publlic or they are not public. The public ones can be found on his [github](https://github.com/infamouskoala).")
         else:
             pass
 
